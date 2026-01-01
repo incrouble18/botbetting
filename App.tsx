@@ -129,7 +129,8 @@ const App: React.FC = () => {
             const target = currentUnit * 6;
             
             // Новая логика: если сумма после ставки >= 6-кратному увеличению стартового юнита (с округлением)
-            if (betData.amount + betData.potentialProfit >= Math.round(currentUnit * 6) || newStep >= 8) {
+            // Ограничение в 8 шагов убрано, цикл завершается только по достижению цели x6
+            if (betData.amount + betData.potentialProfit >= Math.round(currentUnit * 6)) {
               isSequenceEnd = true;
               newStep = 1;
             } else {
