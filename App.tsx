@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AppState, Session, StrategyType, Source, Bet } from './types';
 import { exportSessionToExcel } from './excelUtils';
 import { STRATEGIES } from './constants';
@@ -18,6 +18,15 @@ const App: React.FC = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+      scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -93,6 +102,46 @@ const App: React.FC = () => {
       ...prev,
       sessions: prev.sessions.map(s => s.id === sessionId ? { ...s, safeLadderInitialType: type, safeLadderInitialValue: value } : s)
     }));
+  };
+
+  const handleRemoveBet = (sessionId: string, betId: string) => {
+    setState(prev => {
+      const newSessions = prev.sessions.map(s => {
+        if (s.id !== sessionId) return s;
+        
+        const betIndex = s.history.findIndex(b => b.id === betId);
+        if (betIndex === -1) return s;
+        
+        const betToRemove = s.history[betIndex];
+        const newHistory = s.history.filter(b => b.id !== betId);
+        
+        // Восстанавливаем банк
+        let restoredBank = s.bank;
+        if (betToRemove.type === 'adjustment') {
+          restoredBank -= betToRemove.potentialProfit;
+        } else {
+          if (betToRemove.outcome === 'win') {
+            restoredBank -= betToRemove.potentialProfit;
+          } else {
+            restoredBank += betToRemove.amount;
+          }
+        }
+
+        // Восстанавливаем шаг (только если удаляем самую последнюю запись)
+        let restoredStep = s.currentLadderStep;
+        if (betIndex === 0) {
+          restoredStep = betToRemove.step;
+        }
+
+        return { 
+          ...s, 
+          bank: Math.max(0, restoredBank), 
+          history: newHistory,
+          currentLadderStep: restoredStep
+        };
+      });
+      return { ...prev, sessions: newSessions };
+    });
   };
 
   const handleAdjustBank = (sessionId: string, amount: number, note: string) => {
@@ -211,26 +260,49 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full">
+      <main className="flex-1 max-w-7xl mx-auto w-full relative">
         {state.sessions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-6 glass rounded-[3rem] border-dashed border-2 border-amber-200">
              <h2 className="text-2xl font-serif text-amber-900 mb-2">Начните сравнение</h2>
              <button onClick={() => setIsModalOpen(true)} className="px-8 py-3 bg-white border border-amber-200 text-amber-700 rounded-xl font-bold hover:bg-amber-50 mt-4 transition-colors shadow-sm">Создать первую сессию</button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {state.sessions.map(session => (
-              <SessionCard 
-                key={session.id} 
-                session={session} 
-                source={state.sources.find(s => s.id === session.sourceId)}
-                onAddBet={(bet) => handleAddBet(session.id, bet)}
-                onAdjust={(amount, note) => handleAdjustBank(session.id, amount, note)}
-                onUpdateFlat={(p) => handleUpdateFlatPercent(session.id, p)}
-                onUpdateSafeLadder={(type, value) => handleUpdateSafeLadder(session.id, type, value)}
-                onRemove={() => handleRemoveSession(session.id)}
-              />
-            ))}
+          <div className="relative group/main">
+            {/* Стрелки навигации */}
+            <button 
+              onClick={() => scroll('left')}
+              className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all opacity-0 group-hover/main:opacity-100 hidden md:block"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            
+            <button 
+              onClick={() => scroll('right')}
+              className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all opacity-0 group-hover/main:opacity-100 hidden md:block"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+            </button>
+
+            <div 
+              ref={scrollRef}
+              className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory no-scrollbar"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {state.sessions.map(session => (
+                <div key={session.id} className="min-w-full md:min-w-[calc(50%-12px)] lg:min-w-[calc(33.333%-16px)] snap-start">
+                  <SessionCard 
+                    session={session} 
+                    source={state.sources.find(s => s.id === session.sourceId)}
+                    onAddBet={(bet) => handleAddBet(session.id, bet)}
+                    onAdjust={(amount, note) => handleAdjustBank(session.id, amount, note)}
+                    onUpdateFlat={(p) => handleUpdateFlatPercent(session.id, p)}
+                    onUpdateSafeLadder={(type, value) => handleUpdateSafeLadder(session.id, type, value)}
+                    onRemoveBet={(betId) => handleRemoveBet(session.id, betId)}
+                    onRemove={() => handleRemoveSession(session.id)}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </main>

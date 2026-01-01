@@ -11,10 +11,11 @@ interface SessionCardProps {
   onAdjust: (amount: number, note: string) => void;
   onUpdateFlat: (percent: number) => void;
   onUpdateSafeLadder?: (type: 'percent' | 'fixed', value: number) => void;
+  onRemoveBet: (betId: string) => void;
   onRemove: () => void;
 }
 
-const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, onAdjust, onUpdateFlat, onUpdateSafeLadder, onRemove }) => {
+const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, onAdjust, onUpdateFlat, onUpdateSafeLadder, onRemoveBet, onRemove }) => {
   const [odds, setOdds] = useState('');
   const [notes, setNotes] = useState('');
   const [adjAmount, setAdjAmount] = useState('');
@@ -262,17 +263,26 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
                         {isAdj ? 'Правка' : session.strategyType === StrategyType.OrdinaryFlat ? 'Ординар' : `Шаг ${bet.step}`}
                       </span>
                     </div>
-                    <div className="text-right flex flex-col items-end">
-                      <div className={`text-[13px] font-black tabular-nums ${isAdj ? 'text-sky-600' : (bet.outcome === 'win' ? 'text-green-600' : 'text-red-500')}`}>
-                        {isAdj ? (bet.potentialProfit >= 0 ? `+${bet.potentialProfit}` : bet.potentialProfit) : (bet.outcome === 'win' ? `+${Math.round(bet.potentialProfit)}` : `-${bet.amount}`)}
-                      </div>
-                      <div className="text-[9px] text-gray-400 font-medium mt-0.5 tracking-tighter uppercase">
-                        {new Date(bet.timestamp).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                      </div>
-                      <div className="text-[9px] text-gray-400 font-medium mt-0.5 tracking-tighter uppercase">
-                        Банк: <span className="text-amber-900 font-bold">{(bet.bankAfter || 0).toLocaleString()}₽</span>
-                      </div>
-                    </div>
+	                    <div className="text-right flex flex-col items-end">
+	                      <div className="flex items-center gap-2">
+	                        <button 
+	                          onClick={() => { if(confirm('Удалить эту запись и вернуть банк?')) onRemoveBet(bet.id); }}
+	                          className="p-1 text-gray-300 hover:text-red-500 transition-colors"
+	                          title="Удалить запись"
+	                        >
+	                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+	                        </button>
+	                        <div className={`text-[13px] font-black tabular-nums ${isAdj ? 'text-sky-600' : (bet.outcome === 'win' ? 'text-green-600' : 'text-red-500')}`}>
+	                          {isAdj ? (bet.potentialProfit >= 0 ? `+${bet.potentialProfit}` : bet.potentialProfit) : (bet.outcome === 'win' ? `+${Math.round(bet.potentialProfit)}` : `-${bet.amount}`)}
+	                        </div>
+	                      </div>
+	                      <div className="text-[9px] text-gray-400 font-medium mt-0.5 tracking-tighter uppercase">
+	                        {new Date(bet.timestamp).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
+	                      </div>
+	                      <div className="text-[9px] text-gray-400 font-medium mt-0.5 tracking-tighter uppercase">
+	                        Банк: <span className="text-amber-900 font-bold">{(bet.bankAfter || 0).toLocaleString()}₽</span>
+	                      </div>
+	                    </div>
                   </div>
 
                   {/* Блок для заметок - Усилен визуально */}
