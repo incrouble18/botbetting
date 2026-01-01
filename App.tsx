@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AppState, Session, StrategyType, Source, Bet } from './types';
+import { exportSessionToExcel } from './excelUtils';
 import { STRATEGIES } from './constants';
 import SessionCard from './components/SessionCard';
 import NewSessionModal from './components/NewSessionModal';
@@ -48,7 +49,7 @@ const App: React.FC = () => {
     };
     setState(prev => ({ 
       ...prev, 
-      sessions: [...prev.sessions, newSession].slice(0, 3) 
+      sessions: [...prev.sessions, newSession].slice(0, 6) 
     }));
     setIsModalOpen(false);
   };
@@ -89,7 +90,9 @@ const App: React.FC = () => {
           bankAfter: newBank,
           isSequenceEnd: false
         };
-        return { ...s, bank: newBank, history: [adjEntry, ...s.history] };
+        const updatedSession = { ...s, bank: newBank, history: [adjEntry, ...s.history] };
+        exportSessionToExcel(updatedSession, prev.sources.find(src => src.id === s.sourceId));
+        return updatedSession;
       });
       return { ...prev, sessions: newSessions };
     });
@@ -146,12 +149,14 @@ const App: React.FC = () => {
           bankAfter: Math.max(0, newBank)
         };
 
-        return { 
+        const updatedSession = { 
           ...s, 
           history: [newBet, ...s.history], 
           bank: Math.max(0, newBank), 
           currentLadderStep: newStep
         };
+        exportSessionToExcel(updatedSession, prev.sources.find(src => src.id === s.sourceId));
+        return updatedSession;
       });
       return { ...prev, sessions: newSessions };
     });
@@ -171,9 +176,9 @@ const App: React.FC = () => {
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setIsModalOpen(true)}
-            disabled={state.sessions.length >= 3}
+            disabled={state.sessions.length >= 6}
             className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all shadow-xl ${
-              state.sessions.length >= 3 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-700 text-white shadow-amber-900/10'
+              state.sessions.length >= 6 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-700 text-white shadow-amber-900/10'
             }`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
