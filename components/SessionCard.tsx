@@ -129,11 +129,20 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
               </button>
             </div>
           </div>
-          <div className="text-right">
+          <div className="text-right flex flex-col items-end">
             <p className="text-[10px] text-gray-400 font-bold uppercase mb-1 tracking-widest">Профит</p>
             <div className={`flex items-center gap-1 justify-end font-bold text-lg tabular-nums ${isPositive ? 'text-green-600' : 'text-red-500'}`}>
               <span>{isPositive ? '+' : ''}{profit.toLocaleString()}₽</span>
             </div>
+            {session.history.length > 0 && (
+              <button 
+                onClick={() => { if(confirm('Отменить последнее действие?')) onRemoveBet(session.history[0].id); }}
+                className="mt-1 flex items-center gap-1 text-[9px] font-bold text-amber-600 hover:text-amber-700 uppercase tracking-tighter transition-colors"
+              >
+                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
+                Отменить шаг
+              </button>
+            )}
           </div>
         </div>
 
