@@ -23,8 +23,23 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
   const [recAmount, setRecAmount] = useState(0);
   
   const strategy = STRATEGIES[session.strategyType];
-  const profit = session.bank - session.initialBank;
-  const isPositive = profit >= 0;
+  const totalProfit = session.bank - session.initialBank;
+  
+  const getTodayProfit = () => {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    
+    return session.history
+      .filter(bet => bet.timestamp >= startOfDay)
+      .reduce((acc, bet) => {
+        const betProfit = bet.type === 'adjustment' 
+          ? bet.potentialProfit 
+          : (bet.outcome === 'win' ? bet.potentialProfit : -bet.amount);
+        return acc + betProfit;
+      }, 0);
+  };
+
+  const todayProfit = getTodayProfit();
 
   useEffect(() => {
     let amount = 0;
@@ -132,9 +147,17 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
             </div>
           </div>
           <div className="text-right flex flex-col items-end">
-            <p className="text-[10px] text-gray-400 font-bold uppercase mb-1 tracking-widest">Профит</p>
-            <div className={`flex items-center gap-1 justify-end font-bold text-lg tabular-nums ${isPositive ? 'text-green-600' : 'text-red-500'}`}>
-              <span>{isPositive ? '+' : ''}{profit.toLocaleString()}₽</span>
+            <div className="mb-2">
+              <p className="text-[9px] text-gray-400 font-bold uppercase mb-0.5 tracking-widest">Общий Профит</p>
+              <div className={`flex items-center gap-1 justify-end font-bold text-base tabular-nums ${totalProfit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                <span>{totalProfit >= 0 ? '+' : ''}{totalProfit.toLocaleString()}₽</span>
+              </div>
+            </div>
+            <div>
+              <p className="text-[9px] text-gray-400 font-bold uppercase mb-0.5 tracking-widest">За сегодня</p>
+              <div className={`flex items-center gap-1 justify-end font-bold text-base tabular-nums ${todayProfit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                <span>{todayProfit >= 0 ? '+' : ''}{todayProfit.toLocaleString()}₽</span>
+              </div>
             </div>
             {session.history.length > 0 && (
               <button 
