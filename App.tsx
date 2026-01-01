@@ -35,16 +35,22 @@ const App: React.FC = () => {
   };
 
   const handleCreateSession = (config: { name: string, bank: number, strategy: StrategyType, sourceId: string }) => {
+    // Для стратегии SplitScale7 банк должен делиться на 6
+    let initialBank = config.bank;
+    if (config.strategy === StrategyType.SplitScale7) {
+      initialBank = Math.floor(config.bank / 6) * 6;
+    }
+
     const newSession: Session = {
       id: Math.random().toString(36).substr(2, 9),
       name: config.name,
-      bank: config.bank,
-      initialBank: config.bank,
+      bank: initialBank,
+      initialBank: initialBank,
       strategyType: config.strategy,
       sourceId: config.sourceId,
       currentLadderStep: 1,
       history: [],
-      lastScalingBank: config.bank,
+      lastScalingBank: initialBank,
       flatPercentage: config.strategy === StrategyType.OrdinaryFlat ? 5 : undefined
     };
     setState(prev => ({ 
@@ -121,7 +127,9 @@ const App: React.FC = () => {
             const scalingFactor = Math.floor(Math.log2(s.bank / s.initialBank));
             const currentUnit = initialUnit * Math.pow(2, Math.max(0, scalingFactor));
             const target = currentUnit * 6;
-            if (betData.amount + betData.potentialProfit >= target * 0.95 || newStep >= 8) {
+            
+            // Новая логика: если сумма после ставки >= 6-кратному увеличению стартового юнита (с округлением)
+            if (betData.amount + betData.potentialProfit >= Math.round(currentUnit * 6) || newStep >= 8) {
               isSequenceEnd = true;
               newStep = 1;
             } else {
