@@ -109,24 +109,26 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
       </div>
 
       <div className="bg-amber-50/40 border border-amber-100/50 rounded-3xl p-5 shadow-inner">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-start">
           <div>
             <p className="text-[10px] text-gray-400 font-bold uppercase mb-1 tracking-widest">Текущий Банк</p>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <p className="text-3xl font-bold text-amber-900 tabular-nums">{session.bank.toLocaleString()}₽</p>
-              <button 
-                onClick={() => setShowAdj(!showAdj)}
-                className={`p-1.5 rounded-full transition-colors ${showAdj ? 'bg-amber-600 text-white' : 'bg-white text-amber-400 border border-amber-100 hover:text-amber-600'}`}
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-              </button>
-              <button 
-                onClick={() => exportSessionToExcel(session, source)}
-                className="p-1.5 rounded-full bg-white text-green-600 border border-green-100 hover:bg-green-50 transition-colors"
-                title="Скачать Excel"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-              </button>
+              <div className="flex flex-col gap-1">
+                <button 
+                  onClick={() => setShowAdj(!showAdj)}
+                  className={`p-1 rounded-full transition-colors ${showAdj ? 'bg-amber-600 text-white' : 'bg-white text-amber-400 border border-amber-100 hover:text-amber-600'}`}
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                </button>
+                <button 
+                  onClick={() => exportSessionToExcel(session, source)}
+                  className="p-1 rounded-full bg-white text-green-600 border border-green-100 hover:bg-green-50 transition-colors"
+                  title="Скачать Excel"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                </button>
+              </div>
             </div>
           </div>
           <div className="text-right flex flex-col items-end">
@@ -234,7 +236,7 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => handleAction('loss')} className="py-4 bg-red-50 text-red-500 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-100 border border-red-100 transition-all active:scale-95">Мимо</button>
+          <button onClick={() => handleAction('loss')} className="py-4 bg-red-50 text-red-500 border border-red-100 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-100 transition-all active:scale-95">Мимо</button>
           <button onClick={() => handleAction('win')} className="py-4 bg-green-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-green-700 shadow-lg transition-all active:scale-95">Зашло</button>
         </div>
       </div>
@@ -282,29 +284,28 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
                         {isAdj ? 'Правка' : session.strategyType === StrategyType.OrdinaryFlat ? 'Ординар' : `Шаг ${bet.step}`}
                       </span>
                     </div>
-	                    <div className="text-right flex flex-col items-end">
-	                      <div className="flex items-center gap-2">
-	                        <button 
-	                          onClick={() => { if(confirm('Удалить эту запись и вернуть банк?')) onRemoveBet(bet.id); }}
-	                          className="p-1 text-gray-300 hover:text-red-500 transition-colors"
-	                          title="Удалить запись"
-	                        >
-	                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-	                        </button>
-	                        <div className={`text-[13px] font-black tabular-nums ${isAdj ? 'text-sky-600' : (bet.outcome === 'win' ? 'text-green-600' : 'text-red-500')}`}>
-	                          {isAdj ? (bet.potentialProfit >= 0 ? `+${bet.potentialProfit}` : bet.potentialProfit) : (bet.outcome === 'win' ? `+${Math.round(bet.potentialProfit)}` : `-${bet.amount}`)}
-	                        </div>
-	                      </div>
-	                      <div className="text-[9px] text-gray-400 font-medium mt-0.5 tracking-tighter uppercase">
-	                        {new Date(bet.timestamp).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
-	                      </div>
-	                      <div className="text-[9px] text-gray-400 font-medium mt-0.5 tracking-tighter uppercase">
-	                        Банк: <span className="text-amber-900 font-bold">{(bet.bankAfter || 0).toLocaleString()}₽</span>
-	                      </div>
-	                    </div>
+                    <div className="text-right flex flex-col items-end">
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => { if(confirm('Удалить эту запись и вернуть банк?')) onRemoveBet(bet.id); }}
+                          className="p-1 text-gray-300 hover:text-red-500 transition-colors"
+                          title="Удалить запись"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
+                        <div className={`text-[13px] font-black tabular-nums ${isAdj ? 'text-sky-600' : (bet.outcome === 'win' ? 'text-green-600' : 'text-red-500')}`}>
+                          {isAdj ? (bet.potentialProfit >= 0 ? `+${bet.potentialProfit}` : bet.potentialProfit) : (bet.outcome === 'win' ? `+${Math.round(bet.potentialProfit)}` : `-${bet.amount}`)}
+                        </div>
+                      </div>
+                      <div className="text-[9px] text-gray-400 font-medium mt-0.5 tracking-tighter uppercase">
+                        {new Date(bet.timestamp).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                      <div className="text-[9px] text-gray-400 font-medium mt-0.5 tracking-tighter uppercase">
+                        Банк: <span className="text-amber-900 font-bold">{(bet.bankAfter || 0).toLocaleString()}₽</span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Блок для заметок - Усилен визуально */}
                   {bet.notes && (
                     <div className="mt-2.5 pt-2 border-t border-black/5 flex items-start gap-2">
                       <svg className="w-3 h-3 text-amber-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>

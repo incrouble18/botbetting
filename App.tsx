@@ -241,7 +241,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#fcfaf8] text-[#2d241e] flex flex-col p-4 md:p-8">
-      <header className="max-w-7xl mx-auto w-full mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <header className="max-w-[1600px] mx-auto w-full mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-4xl font-serif italic text-amber-900">ZenBet</h1>
@@ -264,7 +264,7 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full relative">
+      <main className="flex-1 max-w-[1600px] mx-auto w-full relative">
         {state.sessions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-6 glass rounded-[3rem] border-dashed border-2 border-amber-200">
              <h2 className="text-2xl font-serif text-amber-900 mb-2">Начните сравнение</h2>
@@ -275,14 +275,14 @@ const App: React.FC = () => {
             {/* Стрелки навигации */}
             <button 
               onClick={() => scroll('left')}
-              className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all opacity-0 group-hover/main:opacity-100 hidden md:block"
+              className="absolute left-[-40px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all opacity-0 group-hover/main:opacity-100 hidden xl:block"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
             </button>
             
             <button 
               onClick={() => scroll('right')}
-              className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all opacity-0 group-hover/main:opacity-100 hidden md:block"
+              className="absolute right-[-40px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all opacity-0 group-hover/main:opacity-100 hidden xl:block"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
             </button>
