@@ -16,13 +16,22 @@ const NewSessionModal: React.FC<NewSessionModalProps> = ({ sources, onClose, onC
   const [bank, setBank] = useState('');
   const [strategy, setStrategy] = useState<StrategyType>(StrategyType.SafeLadder5);
   const [sourceId, setSourceId] = useState(sources[0]?.id || '');
+  const [safeLadderInitialType, setSafeLadderInitialType] = useState<'percent' | 'fixed'>('percent');
+  const [safeLadderInitialValue, setSafeLadderInitialValue] = useState('5');
   const [isAddingSource, setIsAddingSource] = useState(false);
   const [newSourceName, setNewSourceName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !bank || !sourceId) return alert('Заполните все поля');
-    onCreate({ name, bank: parseFloat(bank), strategy, sourceId });
+    onCreate({ 
+      name, 
+      bank: parseFloat(bank), 
+      strategy, 
+      sourceId,
+      safeLadderInitialType,
+      safeLadderInitialValue: parseFloat(safeLadderInitialValue)
+    });
   };
 
   const handleAddSourceSubmit = () => {
@@ -80,6 +89,40 @@ const NewSessionModal: React.FC<NewSessionModalProps> = ({ sources, onClose, onC
               </select>
             </div>
           </div>
+
+          {strategy === StrategyType.SafeLadder5 && (
+            <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-100 space-y-3 animate-in slide-in-from-top-2 duration-300">
+              <label className="block text-[10px] font-bold text-amber-800 uppercase tracking-widest">Настройка первой ставки</label>
+              <div className="flex gap-2">
+                <button 
+                  type="button"
+                  onClick={() => setSafeLadderInitialType('percent')}
+                  className={`flex-1 py-2 rounded-xl text-[10px] font-bold uppercase transition-all ${safeLadderInitialType === 'percent' ? 'bg-amber-600 text-white shadow-md' : 'bg-white text-amber-600 border border-amber-200'}`}
+                >
+                  Процент от банка
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setSafeLadderInitialType('fixed')}
+                  className={`flex-1 py-2 rounded-xl text-[10px] font-bold uppercase transition-all ${safeLadderInitialType === 'fixed' ? 'bg-amber-600 text-white shadow-md' : 'bg-white text-amber-600 border border-amber-200'}`}
+                >
+                  Фикс. сумма
+                </button>
+              </div>
+              <div className="relative">
+                <input 
+                  type="number"
+                  value={safeLadderInitialValue}
+                  onChange={e => setSafeLadderInitialValue(e.target.value)}
+                  placeholder={safeLadderInitialType === 'percent' ? "5" : "100"}
+                  className="w-full bg-white border border-amber-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/20 text-sm"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-800 font-bold text-xs">
+                  {safeLadderInitialType === 'percent' ? '%' : '₽'}
+                </span>
+              </div>
+            </div>
+          )}
 
           <div>
             <div className="flex justify-between items-end mb-1 ml-1">

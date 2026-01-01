@@ -34,7 +34,14 @@ const App: React.FC = () => {
     }
   };
 
-  const handleCreateSession = (config: { name: string, bank: number, strategy: StrategyType, sourceId: string }) => {
+  const handleCreateSession = (config: { 
+    name: string, 
+    bank: number, 
+    strategy: StrategyType, 
+    sourceId: string,
+    safeLadderInitialType?: 'percent' | 'fixed',
+    safeLadderInitialValue?: number
+  }) => {
     // Для стратегии SplitScale7 банк должен делиться на 6 круглыми суммами
     let initialBank = config.bank;
     if (config.strategy === StrategyType.SplitScale7) {
@@ -54,7 +61,9 @@ const App: React.FC = () => {
       currentLadderStep: 1,
       history: [],
       lastScalingBank: initialBank,
-      flatPercentage: config.strategy === StrategyType.OrdinaryFlat ? 5 : undefined
+      flatPercentage: config.strategy === StrategyType.OrdinaryFlat ? 5 : undefined,
+      safeLadderInitialType: config.safeLadderInitialType,
+      safeLadderInitialValue: config.safeLadderInitialValue
     };
     setState(prev => ({ 
       ...prev, 
@@ -76,6 +85,13 @@ const App: React.FC = () => {
     setState(prev => ({
       ...prev,
       sessions: prev.sessions.map(s => s.id === sessionId ? { ...s, flatPercentage: percent } : s)
+    }));
+  };
+  
+  const handleUpdateSafeLadder = (sessionId: string, type: 'percent' | 'fixed', value: number) => {
+    setState(prev => ({
+      ...prev,
+      sessions: prev.sessions.map(s => s.id === sessionId ? { ...s, safeLadderInitialType: type, safeLadderInitialValue: value } : s)
     }));
   };
 
@@ -211,6 +227,7 @@ const App: React.FC = () => {
                 onAddBet={(bet) => handleAddBet(session.id, bet)}
                 onAdjust={(amount, note) => handleAdjustBank(session.id, amount, note)}
                 onUpdateFlat={(p) => handleUpdateFlatPercent(session.id, p)}
+                onUpdateSafeLadder={(type, value) => handleUpdateSafeLadder(session.id, type, value)}
                 onRemove={() => handleRemoveSession(session.id)}
               />
             ))}

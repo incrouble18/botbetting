@@ -38,6 +38,8 @@ export interface Session {
   history: Bet[];
   lastScalingBank?: number;
   flatPercentage?: number; // Настройка для стратегии OrdinaryFlat
+  safeLadderInitialType?: 'percent' | 'fixed';
+  safeLadderInitialValue?: number;
 }
 
 export interface StrategyDefinition {

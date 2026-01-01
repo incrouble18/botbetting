@@ -10,10 +10,11 @@ interface SessionCardProps {
   onAddBet: (bet: any) => void;
   onAdjust: (amount: number, note: string) => void;
   onUpdateFlat: (percent: number) => void;
+  onUpdateSafeLadder?: (type: 'percent' | 'fixed', value: number) => void;
   onRemove: () => void;
 }
 
-const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, onAdjust, onUpdateFlat, onRemove }) => {
+const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, onAdjust, onUpdateFlat, onUpdateSafeLadder, onRemove }) => {
   const [odds, setOdds] = useState('');
   const [notes, setNotes] = useState('');
   const [adjAmount, setAdjAmount] = useState('');
@@ -32,10 +33,18 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
       const p = session.flatPercentage || 5;
       amount = session.bank * (p / 100);
     } else if (session.strategyType === StrategyType.SafeLadder5) {
+      const initialType = session.safeLadderInitialType || 'percent';
+      const initialValue = session.safeLadderInitialValue ?? 5;
+      
       if (session.currentLadderStep === 1) {
-        amount = session.bank * 0.05;
+        if (initialType === 'percent') {
+          amount = session.bank * (initialValue / 100);
+        } else {
+          amount = initialValue;
+        }
       } else {
-        amount = lastRealBet ? lastRealBet.amount + lastRealBet.potentialProfit : session.bank * 0.05;
+        const defaultStart = initialType === 'percent' ? session.bank * (initialValue / 100) : initialValue;
+        amount = lastRealBet ? lastRealBet.amount + lastRealBet.potentialProfit : defaultStart;
       }
     } else if (session.strategyType === StrategyType.SplitScale7) {
       const initialUnit = session.initialBank / 6;
@@ -160,6 +169,24 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
                 onChange={(e) => onUpdateFlat(parseInt(e.target.value) || 1)}
                 className="w-12 bg-amber-50 border-none rounded-lg px-2 py-1 text-xs text-amber-700 font-bold text-center"
               />
+            </div>
+          ) : session.strategyType === StrategyType.SafeLadder5 ? (
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => onUpdateSafeLadder?.(session.safeLadderInitialType === 'fixed' ? 'percent' : 'fixed', session.safeLadderInitialValue ?? 5)}
+                className="text-[9px] font-bold text-amber-600 uppercase hover:underline"
+              >
+                {session.safeLadderInitialType === 'fixed' ? 'Фикс:' : '%:'}
+              </button>
+              <input 
+                type="number" 
+                value={session.safeLadderInitialValue ?? 5}
+                onChange={(e) => onUpdateSafeLadder?.(session.safeLadderInitialType || 'percent', parseFloat(e.target.value) || 0)}
+                className="w-12 bg-amber-50 border-none rounded-lg px-2 py-1 text-xs text-amber-700 font-bold text-center"
+              />
+              <div className="px-2 py-1 bg-amber-100/50 rounded-full text-amber-700 text-[10px] font-black uppercase tracking-widest ml-1">
+                Шаг {session.currentLadderStep}
+              </div>
             </div>
           ) : (
             <div className="px-3 py-1 bg-amber-100/50 rounded-full text-amber-700 text-[10px] font-black uppercase tracking-widest">
