@@ -23,15 +23,17 @@ const StrategySelector: React.FC<StrategySelectorProps> = ({ onSelect }) => {
     <div className="max-w-6xl mx-auto relative group">
       {/* Стрелки навигации */}
       <button 
+        type="button"
         onClick={() => scroll('left')}
-        className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all opacity-0 group-hover:opacity-100 hidden md:block"
+        className="absolute left-[-10px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all md:flex items-center justify-center"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
       </button>
       
       <button 
+        type="button"
         onClick={() => scroll('right')}
-        className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all opacity-0 group-hover:opacity-100 hidden md:block"
+        className="absolute right-[-10px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all md:flex items-center justify-center"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
       </button>
@@ -48,7 +50,7 @@ const StrategySelector: React.FC<StrategySelectorProps> = ({ onSelect }) => {
           return (
             <div 
               key={key}
-              className={`min-w-full md:min-w-[calc(50%-16px)] snap-start group relative glass rounded-3xl p-8 cursor-pointer transition-all duration-500 ${isSelected ? 'ring-2 ring-amber-500 shadow-xl shadow-amber-900/5 bg-white' : 'hover:bg-white/80'}`}
+              className={`min-w-full md:min-w-[calc(100%-16px)] snap-start group relative glass rounded-3xl p-8 cursor-pointer transition-all duration-500 ${isSelected ? 'ring-2 ring-amber-500 shadow-xl shadow-amber-900/5 bg-white' : 'hover:bg-white/80'}`}
               onClick={() => setSelected(key)}
             >
               <div className="flex justify-between items-start mb-6">
