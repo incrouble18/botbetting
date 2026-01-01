@@ -45,7 +45,7 @@ const NewSessionModal: React.FC<NewSessionModalProps> = ({ sources, onClose, onC
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-amber-900/10 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="glass w-full max-w-4xl p-8 rounded-3xl shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div className="glass w-full max-w-md p-6 rounded-3xl shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-serif text-amber-900">Новый тест</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-2">
@@ -65,7 +65,7 @@ const NewSessionModal: React.FC<NewSessionModalProps> = ({ sources, onClose, onC
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Начальный банк (₽)</label>
               <input 
@@ -77,7 +77,7 @@ const NewSessionModal: React.FC<NewSessionModalProps> = ({ sources, onClose, onC
                 className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/20 text-sm"
               />
             </div>
-            <div className="col-span-2">
+            <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase mb-3 ml-1">Выберите стратегию</label>
               <div className="bg-gray-50/50 rounded-3xl p-4 border border-gray-100">
                 <StrategySelector onSelect={(type) => setStrategy(type)} />
