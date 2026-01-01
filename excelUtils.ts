@@ -17,6 +17,24 @@ export const exportSessionToExcel = (session: Session, source?: Source) => {
     
     const isToday = bet.timestamp >= startOfDay;
 
+    const todayStart = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime();
+    const isBetToday = bet.timestamp >= todayStart;
+    
+    // Расчет профита за день на момент этой ставки
+    const profitAtThatDay = sortedHistory
+      .filter(b => {
+        const bDate = new Date(b.timestamp);
+        const betDate = new Date(bet.timestamp);
+        return b.timestamp <= bet.timestamp && 
+               bDate.getFullYear() === betDate.getFullYear() && 
+               bDate.getMonth() === betDate.getMonth() && 
+               bDate.getDate() === betDate.getDate();
+      })
+      .reduce((acc, b) => {
+        const p = b.type === 'adjustment' ? b.potentialProfit : (b.outcome === 'win' ? b.potentialProfit : -b.amount);
+        return acc + p;
+      }, 0);
+
     return {
       'Дата и время': new Date(bet.timestamp).toLocaleString('ru-RU'),
       'Тип': bet.type === 'adjustment' ? 'Правка' : 'Ставка',
@@ -27,7 +45,8 @@ export const exportSessionToExcel = (session: Session, source?: Source) => {
       'Коэффициент': bet.odds,
       'Результат': bet.outcome === 'win' ? 'Выигрыш' : 'Проигрыш',
       'Профит': betProfit,
-      'Накопительный профит': cumulativeProfit,
+      'Профит за день': profitAtThatDay,
+      'Общий профит': cumulativeProfit,
       'Банк после': bet.bankAfter,
       'Заметки': bet.notes || ''
     };

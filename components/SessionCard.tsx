@@ -149,14 +149,14 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
           <div className="text-right flex flex-col items-end justify-center h-full">
             <div className="flex flex-col items-end">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Общий:</span>
-                <span className={`font-bold text-base tabular-nums ${totalProfit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Профит</span>
+                <span className={`font-bold text-xl tabular-nums ${totalProfit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                   {totalProfit >= 0 ? '+' : ''}{totalProfit.toLocaleString()}₽
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Сегодня:</span>
-                <span className={`font-bold text-base tabular-nums ${todayProfit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                <span className={`font-bold text-sm tabular-nums ${todayProfit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                   {todayProfit >= 0 ? '+' : ''}{todayProfit.toLocaleString()}₽
                 </span>
               </div>
