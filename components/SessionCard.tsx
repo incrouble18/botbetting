@@ -183,17 +183,25 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
           ) : session.strategyType === StrategyType.SafeLadder5 ? (
             <div className="flex flex-col items-end gap-1">
               <div className="flex items-center gap-1.5">
-                <button 
-                  onClick={() => onUpdateSafeLadder?.(session.safeLadderInitialType === 'fixed' ? 'percent' : 'fixed', session.safeLadderInitialValue ?? 5)}
-                  className="text-[8px] font-black text-amber-600 uppercase bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100 hover:bg-amber-100 transition-colors"
-                >
-                  {session.safeLadderInitialType === 'fixed' ? 'Фикс' : '%'}
-                </button>
+                <div className="flex bg-amber-50 rounded-lg p-0.5 border border-amber-100">
+                  <button 
+                    onClick={() => onUpdateSafeLadder?.('percent', session.safeLadderInitialValue ?? 5)}
+                    className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded transition-colors ${session.safeLadderInitialType !== 'fixed' ? 'bg-amber-600 text-white' : 'text-amber-600 hover:bg-amber-100'}`}
+                  >
+                    %
+                  </button>
+                  <button 
+                    onClick={() => onUpdateSafeLadder?.('fixed', session.safeLadderInitialValue ?? 5)}
+                    className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded transition-colors ${session.safeLadderInitialType === 'fixed' ? 'bg-amber-600 text-white' : 'text-amber-600 hover:bg-amber-100'}`}
+                  >
+                    ₽
+                  </button>
+                </div>
                 <input 
                   type="number" 
                   value={session.safeLadderInitialValue ?? 5}
                   onChange={(e) => onUpdateSafeLadder?.(session.safeLadderInitialType || 'percent', parseFloat(e.target.value) || 0)}
-                  className="w-10 bg-amber-50 border-none rounded-lg px-1 py-1 text-[11px] text-amber-700 font-bold text-center focus:ring-1 focus:ring-amber-200"
+                  className="w-12 bg-amber-50 border-none rounded-lg px-1 py-1 text-[11px] text-amber-700 font-bold text-center focus:ring-1 focus:ring-amber-200"
                 />
                 <div className="px-2 py-1 bg-amber-100/50 rounded-full text-amber-700 text-[10px] font-black uppercase tracking-widest">
                   Шаг {session.currentLadderStep}

@@ -11,11 +11,24 @@ const StrategySelector: React.FC<StrategySelectorProps> = ({ onSelect }) => {
   const [selected, setSelected] = useState<StrategyType | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
-  const scroll = (direction: 'left' | 'right') => {
+  const strategies = Object.keys(STRATEGIES) as StrategyType[];
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handlePrev = () => {
+    const newIndex = currentIndex > 0 ? currentIndex - 1 : strategies.length - 1;
+    setCurrentIndex(newIndex);
     if (scrollRef.current) {
-      const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
-      scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+      const clientWidth = scrollRef.current.clientWidth;
+      scrollRef.current.scrollTo({ left: newIndex * clientWidth, behavior: 'smooth' });
+    }
+  };
+
+  const handleNext = () => {
+    const newIndex = currentIndex < strategies.length - 1 ? currentIndex + 1 : 0;
+    setCurrentIndex(newIndex);
+    if (scrollRef.current) {
+      const clientWidth = scrollRef.current.clientWidth;
+      scrollRef.current.scrollTo({ left: newIndex * clientWidth, behavior: 'smooth' });
     }
   };
 
@@ -24,33 +37,33 @@ const StrategySelector: React.FC<StrategySelectorProps> = ({ onSelect }) => {
       {/* Стрелки навигации */}
       <button 
         type="button"
-        onClick={() => scroll('left')}
-        className="absolute left-[-10px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all md:flex items-center justify-center"
+        onClick={handlePrev}
+        className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-30 p-4 bg-white border border-amber-100 rounded-full shadow-2xl text-amber-600 hover:bg-amber-50 hover:scale-110 transition-all flex items-center justify-center group/btn"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
+        <svg className="w-8 h-8 group-hover/btn:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" /></svg>
       </button>
       
       <button 
         type="button"
-        onClick={() => scroll('right')}
-        className="absolute right-[-10px] top-1/2 -translate-y-1/2 z-30 p-3 bg-white border border-amber-100 rounded-full shadow-xl text-amber-600 hover:bg-amber-50 transition-all md:flex items-center justify-center"
+        onClick={handleNext}
+        className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-30 p-4 bg-white border border-amber-100 rounded-full shadow-2xl text-amber-600 hover:bg-amber-50 hover:scale-110 transition-all flex items-center justify-center group/btn"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+        <svg className="w-8 h-8 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" /></svg>
       </button>
 
       <div 
         ref={scrollRef}
-        className="flex overflow-x-auto gap-8 pb-8 snap-x snap-mandatory no-scrollbar"
+        className="flex overflow-x-hidden gap-8 pb-8 snap-x snap-mandatory no-scrollbar"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {(Object.keys(STRATEGIES) as StrategyType[]).map((key) => {
+        {strategies.map((key) => {
           const s = STRATEGIES[key];
           const isSelected = selected === key;
           
           return (
             <div 
               key={key}
-              className={`min-w-full md:min-w-[calc(100%-16px)] snap-start group relative glass rounded-3xl p-8 cursor-pointer transition-all duration-500 ${isSelected ? 'ring-2 ring-amber-500 shadow-xl shadow-amber-900/5 bg-white' : 'hover:bg-white/80'}`}
+              className={`min-w-full snap-start group relative glass rounded-3xl p-8 cursor-pointer transition-all duration-500 ${isSelected ? 'ring-2 ring-amber-500 shadow-xl shadow-amber-900/5 bg-white' : 'hover:bg-white/80'}`}
               onClick={() => setSelected(key)}
             >
               <div className="flex justify-between items-start mb-6">

@@ -129,15 +129,10 @@ const App: React.FC = () => {
 
         // Восстанавливаем шаг
         // Если удаляем последнюю запись (betIndex === 0), возвращаемся к шагу этой записи
-        // Если в истории больше нет ставок, сбрасываем на шаг 1
         let restoredStep = s.currentLadderStep;
         if (betIndex === 0) {
-          const lastRealBet = newHistory.find(b => b.type === 'bet' || !b.type);
-          if (!lastRealBet) {
-            restoredStep = 1;
-          } else {
-            // Если удаленная ставка была выигрышной, мы откатываемся на её шаг
-            // Если проигрышной, мы тоже откатываемся на её шаг (так как проигрыш сбрасывает на 1)
+          // Если это была обычная ставка (не корректировка), откатываем шаг
+          if (betToRemove.type === 'bet' || !betToRemove.type) {
             restoredStep = betToRemove.step;
           }
         }
