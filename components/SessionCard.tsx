@@ -27,7 +27,7 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, source, onAddBet, on
   
   const getTodayProfit = () => {
     const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime();
     
     return session.history
       .filter(bet => bet.timestamp >= startOfDay)
