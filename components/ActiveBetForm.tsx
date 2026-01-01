@@ -39,8 +39,8 @@ const ActiveBetForm: React.FC<ActiveBetFormProps> = ({ state, onAddBet, strategy
         if (lastBet && lastBet.outcome === 'win') {
           const nextAmount = lastBet.amount + lastBet.potentialProfit;
           const target = Math.round(unit * 6);
-          // Если следующая ставка уже достигает или превышает цель x6, ограничиваем её целью
-          recommended = nextAmount >= target ? target : nextAmount;
+          // Если следующая ставка уже достигает или превышает цель x6 (с небольшим допуском), ограничиваем её целью
+          recommended = nextAmount >= target * 0.98 ? target : nextAmount;
         } else {
           recommended = unit;
         }
