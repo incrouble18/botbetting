@@ -17,11 +17,20 @@ const SourceStatsDashboard: React.FC<SourceStatsDashboardProps> = ({ history, so
     const profit = wins.reduce((acc, b) => acc + b.potentialProfit, 0) - losses.reduce((acc, b) => acc + b.amount, 0);
     const winRate = sourceBets.length > 0 ? (wins.length / sourceBets.length) * 100 : 0;
     
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const todayBets = sourceBets.filter(b => b.timestamp >= startOfDay);
+    const todayProfit = todayBets.reduce((acc, b) => {
+      const p = b.type === 'adjustment' ? b.potentialProfit : (b.outcome === 'win' ? b.potentialProfit : -b.amount);
+      return acc + p;
+    }, 0);
+
     return {
       id: source.id,
       name: source.name,
       total: sourceBets.length,
       profit,
+      todayProfit,
       winRate
     };
   }).sort((a, b) => b.profit - a.profit);
@@ -34,6 +43,9 @@ const SourceStatsDashboard: React.FC<SourceStatsDashboardProps> = ({ history, so
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{s.name}</p>
             <div className={`text-sm font-bold mt-1 ${s.profit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
               {s.profit > 0 ? '+' : ''}{s.profit.toLocaleString()}₽
+            </div>
+            <div className={`text-[10px] font-bold ${s.todayProfit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+              Сегодня: {s.todayProfit > 0 ? '+' : ''}{s.todayProfit.toLocaleString()}₽
             </div>
             <p className="text-[9px] text-gray-500">{s.winRate.toFixed(0)}% WR ({s.total} шт)</p>
           </div>
@@ -55,6 +67,9 @@ const SourceStatsDashboard: React.FC<SourceStatsDashboardProps> = ({ history, so
             <div className="text-right">
               <div className={`font-bold ${s.profit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                 {s.profit > 0 ? '+' : ''}{s.profit.toLocaleString()}₽
+              </div>
+              <div className={`text-[10px] font-bold ${s.todayProfit >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                Сегодня: {s.todayProfit > 0 ? '+' : ''}{s.todayProfit.toLocaleString()}₽
               </div>
               <div className="text-[9px] text-gray-400">WR: {s.winRate.toFixed(1)}%</div>
             </div>
