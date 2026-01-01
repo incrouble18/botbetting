@@ -90,9 +90,7 @@ const App: React.FC = () => {
           bankAfter: newBank,
           isSequenceEnd: false
         };
-        const updatedSession = { ...s, bank: newBank, history: [adjEntry, ...s.history] };
-        exportSessionToExcel(updatedSession, prev.sources.find(src => src.id === s.sourceId));
-        return updatedSession;
+        return { ...s, bank: newBank, history: [adjEntry, ...s.history] };
       });
       return { ...prev, sessions: newSessions };
     });
@@ -149,14 +147,12 @@ const App: React.FC = () => {
           bankAfter: Math.max(0, newBank)
         };
 
-        const updatedSession = { 
+        return { 
           ...s, 
           history: [newBet, ...s.history], 
           bank: Math.max(0, newBank), 
           currentLadderStep: newStep
         };
-        exportSessionToExcel(updatedSession, prev.sources.find(src => src.id === s.sourceId));
-        return updatedSession;
       });
       return { ...prev, sessions: newSessions };
     });
